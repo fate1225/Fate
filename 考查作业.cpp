@@ -1,3 +1,4 @@
+#include<stdio.h>
 #include<iostream>
 #include<fstream>
 using namespace std;
@@ -54,18 +55,18 @@ void grsds(int i)//求职工应发工资，个人所得税，实发工资
 			zggz[i].geshui=zggz[i].yingzi*0.05;
 		}
 		zggz[i].shizi=zggz[i].yingzi-zggz[i].geshui;//计算实得工资
-	
+		printf("%g,%g,%g",zggz[i].yingzi,zggz[i].geshui,zggz[i].shizi);
 }
 int read()//读取职工数据
 {
-	FILE*fp;
+	FILE *fp;
 	fp=fopen("gx.dat","rb");//打开文件
 	fseek(fp,0,SEEK_SET);//移动指针
 	fseek(fp,0,SEEK_END);//同上
     int number=ftell(fp)/sizeof(struct zggz);//总字节长度除以结构体单位长度即为人数
-	n=number;
+	n=number;//将所得人数赋值给n
 	fseek(fp,0,SEEK_SET);
-	if(fp==NULL)
+	if(fp==NULL)//打开失败
 	{
 		return -1;
 	}
@@ -76,82 +77,100 @@ int read()//读取职工数据
 void find()//查询
 {
 	char gonghao[100];
-	cout<<"输入要查询的职工号"<<endl;
-	cin>>gonghao;//输入工号
-	for(int i=0;i<100;i++)
+	printf("输入要查询的职工号\n");
+	scanf("%s",gonghao);//输入工号
+	for(int i=0;i<n;i++)
 	{
-		if(gonghao[100]==zggz[i].gonghao[100])
+		if(strcmp(gonghao,zggz[i].gonghao)==0)//查询是否有匹配的工号
 		{
-			cout<<zggz[i].gonghao<<" "
-		        <<zggz[i].xingming<<" "
-		        <<zggz[i].ganggong<<" "
-		        <<zggz[i].xingong<<" "
-		        <<zggz[i].zhitie<<" "
-		        <<zggz[i].jizi<<" "
-		        <<zggz[i].yingzi<<" "
-		        <<zggz[i].geshui<<" "
-		        <<zggz[i].shizi
-		        <<endl;
+			printf("%s,%s,%g,%g,%g,%g,",
+				zggz[i].gonghao,zggz[i].xingming,zggz[i].ganggong,zggz[i].xingong,zggz[i].zhitie,zggz[i].jizi);
+            grsds(i);
+			printf("\n");
 			break;
 		}
-		else
+		if(i==n-1)//表示最后一个数组的数据也不匹配，即文件内无相关职工记录
 		{
-			cout<<"查无此人"<<endl;
+			printf("查无此人\n");
 		}
 	}
 }
 void modify()//修改
 {
 	char gonghao[100];
-	int i;
-	cout<<"输入要查询的职工号"<<endl;
-	ifstream in("gx.dat",ios::binary);//打开
-	if(!in)
+	printf("输入要查询的职工号\n");
+	scanf("%s",gonghao);//输入工号
+	for(int i=0;i<n;i++)
 	{
-		cout<<"Cannot open input file.\n";
-		abort();//退出程序，相当于exit
-	}
-	for(i=0;i<=n;i++)
-	{
-		in.read((char*)&zggz[i],sizeof(zggz[i]));//读取数据
-		cin>>gonghao;//输入要查询的工号
-		if(gonghao==zggz[i].gonghao)//进行修改
+		if(strcmp(gonghao,zggz[i].gonghao)==0)//查询是否有匹配的工号//进行修改
 		{
-			char q[100];
-	        float w;
-	        float e;
-	        float r;
-	        float t;
-			cout<<"重新输入除工号，应发工资，个人所得税，实发工资外其他信息"<<endl;
-			cin>>q>>w>>e>>r>>t;
-			void grsds(char gonghao);//调用grsds()函数求应发工资，个人所得税和实发工资
-			strcpy(zggz[i].xingming,q);
-			zggz[i].ganggong=w;
-			zggz[i].xingong=e;
-			zggz[i].zhitie=r;
-			zggz[i].jizi=t;
+			printf("重新输入除工号，应发工资，个人所得税，实发工资外其他信息\n");
+			scanf("%s",zggz[i].xingming);
+			scanf("%f",&zggz[i].ganggong);
+		    scanf("%f",&zggz[i].xingong);
+		    scanf("%f",&zggz[i].zhitie);
+		    scanf("%f",&zggz[i].jizi);
+			printf("%s,%s,%g,%g,%g,%g,",
+				zggz[i].gonghao,zggz[i].xingming,zggz[i].ganggong,zggz[i].xingong,zggz[i].zhitie,zggz[i].jizi);
+			grsds(i);//调用grsds()函数求应发工资，个人所得税和实发工资
+			break;
+		}
+		if(i==n-1)//表示最后一个数组的数据也不匹配，即文件内无相关职工记录
+		{
+			printf("查无此人\n");
 		}
 	}
-	in.close();
 }
 void add()//添加
 {
-	cout<<"输入想要写入的员工数"<<endl;
+	printf("输入想要写入的员工数\n");
 	int num;
-	cin>>num;
-	cout<<"依次输入职工信息"<<endl;
-	cout<<"工号"<<"姓名"<<"岗位工资"<<"薪级工资"<<"职务津贴"<<"绩效工资"<<endl;
-	for(int i=0;i<num;i++)
+	scanf("%d",&num);
+	for(int i=n;i<num+n;i++)
 	{
-		cin>>zggz[i].gonghao
-	       >>zggz[i].xingming
-	       >>zggz[i].ganggong
-	       >>zggz[i].xingong
-	       >>zggz[i].zhitie
-	       >>zggz[i].jizi;
-        grsds(i);
+		printf("依次输入职工信息\n");
+	    printf("工号,姓名,岗位工资,薪级工资,职务津贴,绩效工资\n");
+		scanf("%s",zggz[i].gonghao);
+        scanf("%s",zggz[i].xingming);
+        scanf("%f",&zggz[i].ganggong);
+		scanf("%f",&zggz[i].xingong);
+		scanf("%f",&zggz[i].zhitie);
+		scanf("%f",&zggz[i].jizi);
 	}
-	n=n+num;
+	n=n+num;//及时更新人数
+}
+void del()//删除指定员工的信息
+{
+	char gonghao[100];
+	printf("输入想要删除的员工工号\n");
+	scanf("%s",gonghao);//输入工号
+	for(int i=0;i<n;i++)
+	{
+	    if(strcmp(gonghao,zggz[i].gonghao)==0)//查询是否有匹配的工号//进行删除
+		{
+			if(i!=n-1)//如果该员工不是最后一个
+			{
+			    for(;i<n;i++)//for循环将后一个数组覆盖掉前一个数组
+				{
+			    zggz[i].ganggong=zggz[i+1].ganggong;
+			    zggz[i].geshui=zggz[i+1].geshui;
+			    strcpy(zggz[i].gonghao,zggz[i+1].gonghao);
+			    zggz[i].jizi=zggz[i+1].jizi;
+			    zggz[i].shizi=zggz[i+1].shizi;
+			    strcpy(zggz[i].xingming,zggz[i+1].xingming);
+			    zggz[i].xingong=zggz[i+1].xingong;
+			    zggz[i].yingzi=zggz[i+1].yingzi;
+			    zggz[i].zhitie=zggz[i+1].zhitie;
+				}
+			n=n-1;//人数对应减一
+			}
+			else//如果该员工是最后一个
+			{
+			n=n-1;//人数对应减一
+			}
+
+		}
+	}
 }
 int write()//写入职工数据
 {
@@ -169,42 +188,69 @@ void list()//列表
 	int i;
     for(i=0;i<n;i++)
 	{
-		cout<<zggz[i].gonghao<<" "
-		<<zggz[i].xingming<<" "
-		<<zggz[i].ganggong<<" "
-		<<zggz[i].xingong<<" "
-		<<zggz[i].zhitie<<" "
-		<<zggz[i].jizi<<" "
-		<<zggz[i].yingzi<<" "
-		<<zggz[i].geshui<<" "
-		<<zggz[i].shizi
-		<<endl;
-	}
+		printf("%s,%s,%g,%g,%g,%g,",
+				zggz[i].gonghao,zggz[i].xingming,zggz[i].ganggong,zggz[i].xingong,zggz[i].zhitie,zggz[i].jizi);
+		grsds(i);
+		printf("\n");
+    }
 }
 int main()
 {
     read();
 	for(int i=0;i<7;)
 	{
-		system("cls");
-	    cout<<"你已进入职工工资管理系统"<<endl;
-	    cout<<"输入相应数字进行操作："<<endl;
-	    cout<<"1.查询"<<" "<<"2.修改"<<" "
-		    <<"3.添加"<<" "<<"4.删除"<<" "
-		    <<"5.保存"<<" "<<"6.浏览"<<" "
-		    <<"7.退出"<<endl;
+		
+	    printf("你已进入职工工资管理系统\n");
+		printf("目前已有");
+		printf("%d",n);
+		printf("名职工信息\n");
+	    printf("输入相应数字进行操作：\n");
+	    printf("1.查询 2.修改 3.添加 4.删除 5.保存 6.浏览 7.退出\n");
 	int p;
-	cin>>p;
+	scanf("%d",&p);
 	switch(p)//相关选项的执行函数
 	{
-		case 1: find();break;
-		case 2: modify();break;
-		case 3: add();break;
-	
-		case 5: write();break;
-		case 6: list();break;
-		case 7: i=7;
-		default: cout<<"输入的数字有误(1~7)"<<endl;
+	    case 1: 
+			{
+                system("cls");
+				find();
+				break;
+			}
+		case 2:
+			{
+				system("cls");
+				modify();
+				break;
+			}
+		case 3: 
+			{
+				system("cls");
+				add();
+				break;
+			}
+		case 4: 
+			{
+				system("cls");
+				del();
+				break;
+			}
+		case 5: 
+			{
+				system("cls");
+				write();
+				break;
+			}
+		case 6: 
+			{
+				system("cls");
+				list();
+				break;
+			}
+		case 7: 
+			{
+				i=7;
+			}
+		
 	}
 	}
 	return 0;
